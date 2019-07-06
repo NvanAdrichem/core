@@ -403,7 +403,7 @@ class Session(object):
 
         try:
             # wireless link
-            if link_options.type == LinkTypes.WIRELESS.value:
+            if link_options.type == LinkTypes.WIRELESS:
                 raise ValueError("cannot update wireless link")
             else:
                 if not node_one and not node_two:
