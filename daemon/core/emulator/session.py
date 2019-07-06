@@ -78,14 +78,14 @@ class Session(object):
         self._nodes_lock = threading.Lock()
 
         # TODO: should the default state be definition?
-        self.state = EventTypes.NONE.value
+        self.state = EventTypes.NONE
         self._state_time = time.time()
         self._state_file = os.path.join(self.session_dir, "state")
 
         # hooks handlers
         self._hooks = {}
         self._state_hooks = {}
-        self.add_state_hook(state=EventTypes.RUNTIME_STATE.value, hook=self.runtime_state_hook)
+        self.add_state_hook(state=EventTypes.RUNTIME_STATE, hook=self.runtime_state_hook)
 
         # handlers for broadcasting information
         self.event_handlers = []
@@ -236,7 +236,7 @@ class Session(object):
                 if all([node_one, node_two]) and not net_one:
                     logging.info("adding link for peer to peer nodes: %s - %s", node_one.name, node_two.name)
                     ptp_class = nodeutils.get_node_class(NodeTypes.PEER_TO_PEER)
-                    start = self.state > EventTypes.DEFINITION_STATE.value
+                    start = self.state not in {EventTypes.NONE, EventTypes.DEFINITION_STATE}
                     net_one = self.create_node(cls=ptp_class, start=start)
 
                 # node to network
@@ -479,7 +479,7 @@ class Session(object):
             return None
 
         # set node start based on current session state, override and check when rj45
-        start = self.state > EventTypes.DEFINITION_STATE.value
+        start = self.state not in {EventTypes.NONE, EventTypes.DEFINITION_STATE}
         enable_rj45 = self.options.get_config("enablerj45") == "1"
         if _type == NodeTypes.RJ45 and not enable_rj45:
             start = False
@@ -521,7 +521,7 @@ class Session(object):
 
         # boot nodes if created after runtime, LcxNodes, Physical, and RJ45 are all PyCoreNodes
         is_boot_node = isinstance(node, CoreNodeBase) and not nodeutils.is_node(node, NodeTypes.RJ45)
-        if self.state == EventTypes.RUNTIME_STATE.value and is_boot_node:
+        if self.state == EventTypes.RUNTIME_STATE and is_boot_node:
             self.write_nodes()
             self.add_remove_control_interface(node=node, remove=False)
             self.services.boot_services(node)
@@ -616,7 +616,7 @@ class Session(object):
 
         :return: True if active, False otherwise
         """
-        result = self.state in {EventTypes.RUNTIME_STATE.value, EventTypes.DATACOLLECT_STATE.value}
+        result = self.state in {EventTypes.RUNTIME_STATE, EventTypes.DATACOLLECT_STATE}
         logging.info("session(%s) checking if active: %s", self.id, result)
         return result
 
@@ -846,23 +846,21 @@ class Session(object):
         :param send_event: if true, generate core API event messages
         :return: nothing
         """
-        state_value = state.value
-        state_name = state.name
 
-        if self.state == state_value:
-            logging.info("session(%s) is already in state: %s, skipping change", self.id, state_name)
+        if self.state == state:
+            logging.info("session(%s) is already in state: %s, skipping change", self.id, state.name)
             return
 
-        self.state = state_value
+        self.state = state
         self._state_time = time.time()
-        logging.info("changing session(%s) to state %s", self.id, state_name)
+        logging.info("changing session(%s) to state %s", self.id, state.name)
 
-        self.write_state(state_value)
-        self.run_hooks(state_value)
-        self.run_state_hooks(state_value)
+        self.write_state(state)
+        self.run_hooks(state)
+        self.run_state_hooks(state)
 
         if send_event:
-            event_data = EventData(event_type=state_value, time="%s" % time.time())
+            event_data = EventData(event_type=state, time="%s" % time.time())
             self.broadcast_event(event_data)
 
     def write_state(self, state):
@@ -874,10 +872,10 @@ class Session(object):
         """
         try:
             state_file = open(self._state_file, "w")
-            state_file.write("%d %s\n" % (state, coreapi.state_name(state)))
+            state_file.write("%d %s\n" % (state.value, state.name))
             state_file.close()
         except IOError:
-            logging.exception("error writing state file: %s", state)
+            logging.exception("error writing state file: %s", state.name)
 
     def run_hooks(self, state):
         """
@@ -1021,7 +1019,7 @@ class Session(object):
         :param int state: state to check
         :return: nothing
         """
-        if state == EventTypes.RUNTIME_STATE.value:
+        if state == EventTypes.RUNTIME_STATE:
             self.emane.poststartup()
             xml_file_version = self.options.get_config("xmlfilever")
             if xml_file_version in ("1.0",):
@@ -1250,7 +1248,7 @@ class Session(object):
         self.broker.local_instantiation_complete()
 
         # notify listeners that instantiation is complete
-        event = EventData(event_type=EventTypes.INSTANTIATION_COMPLETE.value)
+        event = EventData(event_type=EventTypes.INSTANTIATION_COMPLETE)
         self.broadcast_event(event)
 
         # assume either all nodes have booted already, or there are some
@@ -1288,7 +1286,7 @@ class Session(object):
         # nodes have been started
         logging.info("session(%s) checking if not in runtime state, current state: %s", self.id,
                      coreapi.state_name(self.state))
-        if self.state == EventTypes.RUNTIME_STATE.value:
+        if self.state == EventTypes.RUNTIME_STATE:
             logging.info("valid runtime state found, returning")
             return
 
@@ -1624,7 +1622,7 @@ class Session(object):
         Return the current time we have been in the runtime state, or zero
         if not in runtime.
         """
-        if self.state == EventTypes.RUNTIME_STATE.value:
+        if self.state == EventTypes.RUNTIME_STATE:
             return time.time() - self._state_time
         else:
             return 0.0

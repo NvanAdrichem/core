@@ -30,7 +30,7 @@ class TestGrpc:
         assert isinstance(response.state, int)
         session = grpc_server.coreemu.sessions.get(response.session_id)
         assert session is not None
-        assert session.state == response.state
+        assert session.state.value == response.state
         if session_id is not None:
             assert response.session_id == session_id
             assert session.id == session_id
@@ -169,7 +169,7 @@ class TestGrpc:
 
         # then
         assert response.result is True
-        assert session.state == core_pb2.SessionState.DEFINITION
+        assert session.state.value == core_pb2.SessionState.DEFINITION
 
     def test_add_node(self, grpc_server):
         # given

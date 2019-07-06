@@ -443,7 +443,7 @@ class TestGui:
 
         coreserver.request_handler.handle_message(message)
 
-        assert coreserver.session.state == state.value
+        assert coreserver.session.state == state
 
     def test_event_schedule(self, coreserver):
         coreserver.session.add_event = mock.MagicMock()

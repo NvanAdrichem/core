@@ -180,7 +180,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         session.set_state(EventTypes.DEFINITION_STATE)
         session.location.setrefgeo(47.57917, -122.13232, 2.0)
         session.location.refscale = 150000.0
-        return core_pb2.CreateSessionResponse(session_id=session.id, state=session.state)
+        return core_pb2.CreateSessionResponse(session_id=session.id, state=session.state.value)
 
     def DeleteSession(self, request, context):
         logging.debug("delete session: %s", request)
@@ -193,7 +193,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         for session_id in self.coreemu.sessions:
             session = self.coreemu.sessions[session_id]
             session_summary = core_pb2.SessionSummary(
-                id=session_id, state=session.state, nodes=session.get_node_count())
+                id=session_id, state=session.state.value, nodes=session.get_node_count())
             sessions.append(session_summary)
         return core_pb2.GetSessionsResponse(sessions=sessions)
 
@@ -286,7 +286,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
             node_links = get_links(session, node)
             links.extend(node_links)
 
-        session_proto = core_pb2.Session(state=session.state, nodes=nodes, links=links)
+        session_proto = core_pb2.Session(state=session.state.value, nodes=nodes, links=links)
         return core_pb2.GetSessionResponse(session=session_proto)
 
     def Events(self, request, context):
@@ -862,7 +862,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         logging.debug("set wlan config: %s", request)
         session = self.get_session(request.session_id, context)
         session.mobility.set_model_config(request.node_id, BasicRangeModel.name, request.config)
-        if session.state == EventTypes.RUNTIME_STATE.value:
+        if session.state == EventTypes.RUNTIME_STATE:
             node = self.get_node(session, request.node_id, context)
             node.updatemodel(request.config)
         return core_pb2.SetWlanConfigResponse(result=True)

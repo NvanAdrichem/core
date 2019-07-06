@@ -222,7 +222,7 @@ class CoreHandler(socketserver.BaseRequestHandler):
 
         tlv_data = structutils.pack_values(coreapi.CoreEventTlv, [
             (EventTlvs.NODE, event_data.node),
-            (EventTlvs.TYPE, event_data.event_type),
+            (EventTlvs.TYPE, event_data.event_type.value),
             (EventTlvs.NAME, event_data.name),
             (EventTlvs.DATA, event_data.data),
             (EventTlvs.TIME, event_data.time),
@@ -494,7 +494,6 @@ class CoreHandler(socketserver.BaseRequestHandler):
             return
 
         message_handler = self.message_handlers[message.message_type]
-
         try:
             # TODO: this needs to be removed, make use of the broadcast message methods
             replies = message_handler(message)
@@ -678,7 +677,7 @@ class CoreHandler(socketserver.BaseRequestHandler):
                 if message.flags & MessageFlags.STRING.value:
                     self.node_status_request[node.id] = True
 
-                if self.session.state == EventTypes.RUNTIME_STATE.value:
+                if self.session.state == EventTypes.RUNTIME_STATE:
                     self.send_node_emulation_id(node.id)
         elif message.flags & MessageFlags.DELETE.value:
             with self._shutdown_lock:
@@ -882,7 +881,7 @@ class CoreHandler(socketserver.BaseRequestHandler):
                     retries = 10
                     # wait for session to enter RUNTIME state, to prevent GUI from
                     # connecting while nodes are still being instantiated
-                    while session.state != EventTypes.RUNTIME_STATE.value:
+                    while session.state != EventTypes.RUNTIME_STATE:
                         logging.debug("waiting for session %d to enter RUNTIME state", sid)
                         time.sleep(1)
                         retries -= 1
@@ -1270,7 +1269,7 @@ class CoreHandler(socketserver.BaseRequestHandler):
                 parsed_config = ConfigShim.str_to_dict(values_str)
 
             self.session.mobility.set_model_config(node_id, object_name, parsed_config)
-            if self.session.state == EventTypes.RUNTIME_STATE.value:
+            if self.session.state == EventTypes.RUNTIME_STATE:
                 try:
                     node = self.session.get_node(node_id)
                     if object_name == BasicRangeModel.name:
@@ -1543,19 +1542,19 @@ class CoreHandler(socketserver.BaseRequestHandler):
                 unknown.append(service_name)
                 continue
 
-            if event_type == EventTypes.STOP.value or event_type == EventTypes.RESTART.value:
+            if event_type == EventTypes.STOP or event_type == EventTypes.RESTART:
                 status = self.session.services.stop_service(node, service)
                 if status:
                     fail += "Stop %s," % service.name
-            if event_type == EventTypes.START.value or event_type == EventTypes.RESTART.value:
+            if event_type == EventTypes.START or event_type == EventTypes.RESTART:
                 status = self.session.services.startup_service(node, service)
                 if status:
                     fail += "Start %s(%s)," % service.name
-            if event_type == EventTypes.PAUSE.value:
+            if event_type == EventTypes.PAUSE:
                 status = self.session.services.validate_service(node, service)
                 if status:
                     fail += "%s," % service.name
-            if event_type == EventTypes.RECONFIGURE.value:
+            if event_type == EventTypes.RECONFIGURE:
                 self.session.services.service_reconfigure(node, service)
 
         fail_data = ""
@@ -1872,7 +1871,7 @@ class CoreUdpHandler(CoreHandler):
             for session_id in self.server.mainserver.coreemu.sessions:
                 current_session = self.server.mainserver.coreemu.sessions[session_id]
                 current_node_count = current_session.get_node_count()
-                if current_session.state == EventTypes.RUNTIME_STATE.value and current_node_count > node_count:
+                if current_session.state == EventTypes.RUNTIME_STATE and current_node_count > node_count:
                     node_count = current_node_count
                     session = current_session
 
