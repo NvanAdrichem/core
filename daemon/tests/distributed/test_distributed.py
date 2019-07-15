@@ -75,7 +75,7 @@ def link_message(n1, n2, intf_one=None, address_one=None, intf_two=None, address
         (LinkTlvs.PER, "0"),
         (LinkTlvs.DUP, "0"),
         (LinkTlvs.JITTER, 0),
-        (LinkTlvs.TYPE, LinkTypes.WIRED.value),
+        (LinkTlvs.TYPE, LinkTypes.WIRED),
         (LinkTlvs.INTERFACE1_NUMBER, intf_one),
         (LinkTlvs.INTERFACE1_IP4, address_one),
         (LinkTlvs.INTERFACE1_IP4_MASK, mask),

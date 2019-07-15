@@ -970,7 +970,7 @@ class CoreNetworkBase(NodeBase):
     """
     Base class for networks
     """
-    linktype = LinkTypes.WIRED.value
+    linktype = LinkTypes.WIRED
 
     def __init__(self, session, _id, name, start=True):
         """

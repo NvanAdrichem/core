@@ -971,7 +971,7 @@ class WlanNode(CoreNetwork):
     Provides wireless lan functionality within a core node.
     """
     apitype = NodeTypes.WIRELESS_LAN.value
-    linktype = LinkTypes.WIRELESS.value
+    linktype = LinkTypes.WIRELESS
     policy = "DROP"
     type = "wlan"
 

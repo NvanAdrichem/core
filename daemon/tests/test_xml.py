@@ -7,6 +7,7 @@ from core.emulator.emudata import NodeOptions, LinkOptions
 from core.emulator.enumerations import NodeTypes
 from core.location.mobility import BasicRangeModel
 from core.services.utility import SshService
+from core.emulator.enumerations import EventTypes
 
 
 class TestXml:
@@ -20,7 +21,7 @@ class TestXml:
         # create hook
         file_name = "runtime_hook.sh"
         data = "#!/bin/sh\necho hello"
-        session.set_hook("hook:4", file_name, None, data)
+        session.add_hook(EventTypes.RUNTIME_STATE, file_name, data)
 
         # save xml
         xml_file = tmpdir.join("session.xml")
@@ -38,8 +39,8 @@ class TestXml:
         session.open_xml(file_path, start=True)
 
         # verify nodes have been recreated
-        runtime_hooks = session._hooks.get(4)
-        assert runtime_hooks
+        runtime_hooks = session._hooks.get(EventTypes.RUNTIME_STATE)
+        assert runtime_hooks is not None
         runtime_hook = runtime_hooks[0]
         assert file_name == runtime_hook[0]
         assert data == runtime_hook[1]

@@ -110,7 +110,7 @@ def convert_link(session, link_data):
     )
 
     return core_pb2.Link(
-        type=link_data.link_type, node_one_id=link_data.node1_id, node_two_id=link_data.node2_id,
+        type=link_data.link_type.value, node_one_id=link_data.node1_id, node_two_id=link_data.node2_id,
         interface_one=interface_one, interface_two=interface_two, options=options
     )
 
@@ -370,7 +370,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
             unidirectional=event.unidirectional
         )
         link = core_pb2.Link(
-            type=event.link_type, node_one_id=event.node1_id, node_two_id=event.node2_id,
+            type=event.link_type.value, node_one_id=event.node1_id, node_two_id=event.node2_id,
             interface_one=interface_one, interface_two=interface_two, options=options)
         return core_pb2.LinkEvent(message_type=event.message_type, link=link)
 
@@ -690,7 +690,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         for state in session._hooks:
             state_hooks = session._hooks[state]
             for file_name, file_data in state_hooks:
-                hook = core_pb2.Hook(state=state, file=file_name, data=file_data)
+                hook = core_pb2.Hook(state=state.value, file=file_name, data=file_data)
                 hooks.append(hook)
         return core_pb2.GetHooksResponse(hooks=hooks)
 
@@ -698,7 +698,7 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         logging.debug("add hook: %s", request)
         session = self.get_session(request.session_id, context)
         hook = request.hook
-        session.add_hook(hook.state, hook.file, None, hook.data)
+        session.add_hook(EventTypes(int(hook.state)), hook.file, hook.data)
         return core_pb2.AddHookResponse(result=True)
 
     def GetMobilityConfigs(self, request, context):

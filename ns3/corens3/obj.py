@@ -113,7 +113,7 @@ class CoreNs3Net(CoreNetworkBase):
     simulated worlds.
     """
     apitype = NodeTypes.WIRELESS_LAN.value
-    linktype = LinkTypes.WIRELESS.value
+    linktype = LinkTypes.WIRELESS
     # icon used
     type = "wlan"
 

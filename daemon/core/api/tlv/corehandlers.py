@@ -1381,11 +1381,8 @@ class CoreHandler(socketserver.BaseRequestHandler):
                     return ()
                 elif file_type.startswith("hook:"):
                     _, state = file_type.split(':')[:2]
-                    if not state.isdigit():
-                        logging.error("error setting hook having state '%s'", state)
-                        return ()
-                    state = int(state)
-                    self.session.add_hook(state, file_name, source_name, data)
+                    state = EventTypes(int(state))
+                    self.session.add_hook(state, file_name, data)
                     return ()
 
             # writing a file to the host

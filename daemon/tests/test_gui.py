@@ -326,12 +326,12 @@ class TestGui:
         assert len(coreserver.server.coreemu.sessions) == 0
 
     def test_file_hook_add(self, coreserver):
-        state = EventTypes.DATACOLLECT_STATE.value
+        state = EventTypes.DATACOLLECT_STATE
         assert coreserver.session._hooks.get(state) is None
         file_name = "test.sh"
         file_data = "echo hello"
         message = coreapi.CoreFileMessage.create(MessageFlags.ADD.value, [
-            (FileTlvs.TYPE, "hook:%s" % state),
+            (FileTlvs.TYPE, "hook:%s" % state.value),
             (FileTlvs.NAME, file_name),
             (FileTlvs.DATA, file_data),
         ])

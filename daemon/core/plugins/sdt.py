@@ -106,7 +106,7 @@ class Sdt(object):
         :param core.emulator.data.LinkData link_data: link data being updated
         :return: nothing
         """
-        if link_data.link_type == LinkTypes.WIRELESS.value:
+        if link_data.link_type == LinkTypes.WIRELESS:
             self.updatelink(link_data.node1_id, link_data.node2_id, link_data.message_type, wireless=True)
 
     def is_enabled(self):
@@ -340,7 +340,7 @@ class Sdt(object):
                 all_links = net.all_link_data(flags=MessageFlags.ADD.value)
                 for link_data in all_links:
                     is_wireless = nodeutils.is_node(net, (NodeTypes.WIRELESS_LAN, NodeTypes.EMANE))
-                    wireless_link = link_data.message_type == LinkTypes.WIRELESS.value
+                    wireless_link = link_data.message_type == LinkTypes.WIRELESS
                     if is_wireless and link_data.node1_id == net.id:
                         continue
 
@@ -446,7 +446,7 @@ class Sdt(object):
         # this filters out links to WLAN and EMANE nodes which are not drawn
         if self.wlancheck(nodenum1):
             return
-        wl = link_msg_type == LinkTypes.WIRELESS.value
+        wl = link_msg_type == LinkTypes.WIRELESS
         if nodenum1 in self.remotes:
             r = self.remotes[nodenum1]
             if msg.flags & MessageFlags.DELETE.value:

@@ -652,20 +652,6 @@ class Session(object):
         """
         CoreXmlWriter(self).write(file_name)
 
-    def add_hook(self, state, file_name, source_name, data):
-        """
-        Store a hook from a received file message.
-
-        :param int state: when to run hook
-        :param str file_name: file name for hook
-        :param str source_name: source name
-        :param data: hook data
-        :return: nothing
-        """
-        # hack to conform with old logic until updated
-        state = ":%s" % state
-        self.set_hook(state, file_name, source_name, data)
-
     def add_node_file(self, node_id, source_name, file_name, data):
         """
         Add a file to a node.
@@ -899,24 +885,20 @@ class Session(object):
         else:
             logging.info("no state hooks for %s", state)
 
-    def set_hook(self, hook_type, file_name, source_name, data):
+    def add_hook(self, state, file_name, data):
         """
         Store a hook from a received file message.
 
-        :param str hook_type: hook type
+        :param Enum state: state
         :param str file_name: file name for hook
-        :param str source_name: source name
         :param str data: hook data
         :return: nothing
         """
-        logging.info("setting state hook: %s - %s from %s", hook_type, file_name, source_name)
+        logging.info("setting state hook: %s - %s", state, file_name)
 
-        _hook_id, state = hook_type.split(':')[:2]
-        if not state.isdigit():
-            logging.error("error setting hook having state '%s'", state)
-            return
+        if not isinstance(state, EventTypes):
+            raise ValueError("Invalid state: %s for add_hook" % state)
 
-        state = int(state)
         hook = file_name, data
 
         # append hook to current state hooks

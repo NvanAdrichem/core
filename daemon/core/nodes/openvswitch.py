@@ -555,7 +555,7 @@ class OvsHubNode(OvsNet):
 
 class OvsWlanNode(OvsNet):
     apitype = NodeTypes.WIRELESS_LAN.value
-    linktype = LinkTypes.WIRELESS.value
+    linktype = LinkTypes.WIRELESS
     policy = "DROP"
     type = "wlan"
 
