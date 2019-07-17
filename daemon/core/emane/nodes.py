@@ -24,7 +24,7 @@ class EmaneNet(CoreNetworkBase):
     """
     EMANE network base class.
     """
-    apitype = NodeTypes.EMANE.value
+    apitype = NodeTypes.EMANE
     linktype = LinkTypes.WIRELESS
     # icon used
     type = "wlan"

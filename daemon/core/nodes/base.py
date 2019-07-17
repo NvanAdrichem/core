@@ -418,7 +418,7 @@ class CoreNode(CoreNodeBase):
     """
     Provides standard core node logic.
     """
-    apitype = NodeTypes.DEFAULT.value
+    apitype = NodeTypes.DEFAULT
     valid_address_types = {"inet", "inet6", "inet6link"}
 
     def __init__(self, session, _id=None, name=None, nodedir=None, bootsh="boot.sh", start=True):

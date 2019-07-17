@@ -397,8 +397,8 @@ class Sdt(object):
         icon = msg.get_tlv(NodeTlvs.ICON.value)
 
         net = False
-        if nodetype == NodeTypes.DEFAULT.value or \
-                nodetype == NodeTypes.PHYSICAL.value:
+        if nodetype == NodeTypes.DEFAULT or \
+                nodetype == NodeTypes.PHYSICAL:
             if model is None:
                 model = "router"
             nodetype = model
