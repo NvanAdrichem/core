@@ -631,7 +631,7 @@ class CoreBroker(object):
         handle_locally = False
         # Do not forward messages when in definition state
         # (for e.g. configuring services)
-        if self.session.state == EventTypes.DEFINITION_STATE.value:
+        if self.session.state == EventTypes.DEFINITION_STATE:
             return False
 
         # Decide whether message should be handled locally or forwarded, or both
