@@ -935,7 +935,7 @@ class SwitchNode(CoreNetwork):
     """
     Provides switch functionality within a core node.
     """
-    apitype = NodeTypes.SWITCH.value
+    apitype = NodeTypes.SWITCH
     policy = "ACCEPT"
     type = "lanswitch"
 
@@ -945,7 +945,7 @@ class HubNode(CoreNetwork):
     Provides hub functionality within a core node, forwards packets to all bridge
     ports by turning off MAC address learning.
     """
-    apitype = NodeTypes.HUB.value
+    apitype = NodeTypes.HUB
     policy = "ACCEPT"
     type = "hub"
 
@@ -970,7 +970,7 @@ class WlanNode(CoreNetwork):
     """
     Provides wireless lan functionality within a core node.
     """
-    apitype = NodeTypes.WIRELESS_LAN.value
+    apitype = NodeTypes.WIRELESS_LAN
     linktype = LinkTypes.WIRELESS
     policy = "DROP"
     type = "wlan"
@@ -1060,6 +1060,6 @@ class TunnelNode(GreTapBridge):
     """
     Provides tunnel functionality in a core node.
     """
-    apitype = NodeTypes.TUNNEL.value
+    apitype = NodeTypes.TUNNEL
     policy = "ACCEPT"
     type = "tunnel"
