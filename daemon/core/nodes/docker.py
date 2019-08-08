@@ -130,7 +130,7 @@ class DockerClient(object):
 
 
 class DockerNode(CoreNode):
-    apitype = NodeTypes.DOCKER.value
+    apitype = NodeTypes.DOCKER
 
     def __init__(self, session, _id=None, name=None, nodedir=None, bootsh="boot.sh", start=True, image=None):
         """

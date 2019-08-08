@@ -135,7 +135,7 @@ class LxdClient(object):
 
 
 class LxcNode(CoreNode):
-    apitype = NodeTypes.LXC.value
+    apitype = NodeTypes.LXC
 
     def __init__(self, session, _id=None, name=None, nodedir=None, bootsh="boot.sh", start=True, image=None):
         """

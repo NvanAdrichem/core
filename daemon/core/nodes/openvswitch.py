@@ -530,13 +530,13 @@ class OvsPtpNet(OvsNet):
 
 
 class OvsSwitchNode(OvsNet):
-    apitype = NodeTypes.SWITCH.value
+    apitype = NodeTypes.SWITCH
     policy = "ACCEPT"
     type = "lanswitch"
 
 
 class OvsHubNode(OvsNet):
-    apitype = NodeTypes.HUB.value
+    apitype = NodeTypes.HUB
     policy = "ACCEPT"
     type = "hub"
 
@@ -554,7 +554,7 @@ class OvsHubNode(OvsNet):
 
 
 class OvsWlanNode(OvsNet):
-    apitype = NodeTypes.WIRELESS_LAN.value
+    apitype = NodeTypes.WIRELESS_LAN
     linktype = LinkTypes.WIRELESS
     policy = "DROP"
     type = "wlan"
@@ -622,7 +622,7 @@ class OvsWlanNode(OvsNet):
 
 
 class OvsTunnelNode(GreTapBridge):
-    apitype = NodeTypes.TUNNEL.value
+    apitype = NodeTypes.TUNNEL
     policy = "ACCEPT"
     type = "tunnel"
 
